@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Uniones Online</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header>
+        <h1>Uniones Online</h1>
+        <p class="subheading">
+            Este sitio ha sido creado para la encriptación de información sobre el proceso de uniones y con el fin de proteger el proceso junto a la calibración de los líderes académicos
+        </p>
+    </header>
+    <main>
+        <div class="table-container">
+            <table id="unionTable">
+                <thead>
+                    <tr>
+                        <th># Grupo</th>
+                        <th>Coach</th>
+                        <th>Nivel</th>
+                        <th>Horario</th>
+                        <th>Tipo de Movimiento Propuesto</th>
+                        <th># Estudiantes Activos</th>
+                        <th>Comentarios Pre Uniones</th>
+                        <th>Lectura y Decisión</th>
+                        <th>Movimiento Realizar</th>
+                        <th>Anuncio</th>
+                        <th>Clase con Anuncio</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Filas generadas por JS -->
+                </tbody>
+            </table>
+            <button onclick="saveTable()">Actualizar</button>
+        </div>
+    </main>
+    <footer>
+        <p>Derechos Reservados Direct English SAC</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
