@@ -1,46 +1,211 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Uniones Online</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uniones Online</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: #333;
+    }
+    header, footer {
+      background: #0066aa;
+      color: white;
+      text-align: center;
+      padding: 1rem 0;
+    }
+    main {
+      padding: 2rem;
+    }
+    .login-container, .table-container {
+      max-width: 1200px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    input, button {
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+    button {
+      background: #0072ff;
+      color: white;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #a0d6e0;
+      padding: 0.5rem;
+      background-color: #e0f7ff;
+      text-align: center;
+    }
+    th {
+      background-color: #00bcd4;
+      color: white;
+    }
+    .hidden {
+      display: none;
+    }
+    .edit-row input {
+      width: 100%;
+    }
+    .logout-btn {
+      margin-top: 1.5rem;
+      background-color: #444;
+    }
+    .admin-controls button {
+      background: red;
+      color: white;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Uniones Online</h1>
-        <p class="subheading">
-            Este sitio ha sido creado para la encriptación de información sobre el proceso de uniones y con el fin de proteger el proceso junto a la calibración de los líderes académicos
-        </p>
-    </header>
-    <main>
-        <div class="table-container">
-            <table id="unionTable">
-                <thead>
-                    <tr>
-                        <th># Grupo</th>
-                        <th>Coach</th>
-                        <th>Nivel</th>
-                        <th>Horario</th>
-                        <th>Tipo de Movimiento Propuesto</th>
-                        <th># Estudiantes Activos</th>
-                        <th>Comentarios Pre Uniones</th>
-                        <th>Lectura y Decisión</th>
-                        <th>Movimiento Realizar</th>
-                        <th>Anuncio</th>
-                        <th>Clase con Anuncio</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <!-- Filas generadas por JS -->
-                </tbody>
-            </table>
-            <button onclick="saveTable()">Actualizar</button>
-        </div>
-    </main>
-    <footer>
-        <p>Derechos Reservados Direct English SAC</p>
-    </footer>
-    <script src="script.js"></script>
+  <header>
+    <h1>Uniones Online</h1>
+    <p>Este sitio ha sido creado para la encriptación de información sobre el proceso de uniones...</p>
+  </header>
+
+  <main>
+    <div class="login-container" id="loginPage">
+      <h2>Iniciar Sesión</h2>
+      <input type="text" id="username" placeholder="Usuario" />
+      <input type="password" id="password" placeholder="Contraseña" />
+      <button onclick="login()">Ingresar</button>
+    </div>
+
+    <div class="table-container hidden" id="mainPage">
+      <table>
+        <thead>
+          <tr>
+            <th># Grupo</th><th>Coach</th><th>Nivel</th><th>Horario</th>
+            <th>Tipo de Movimiento Propuesto</th><th># Estudiantes Activos</th>
+            <th>Comentarios Pre Uniones</th><th>Lectura y Decisión</th>
+            <th>Movimiento Realizar</th><th>Anuncio</th><th>Clase con Anuncio</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="dataBody"></tbody>
+      </table>
+      <div id="editRow" class="edit-row hidden">
+        <input placeholder="# Grupo" /><input placeholder="Coach" /><input placeholder="Nivel" />
+        <input placeholder="Horario" /><input placeholder="Tipo de Movimiento Propuesto" />
+        <input placeholder="# Estudiantes Activos" /><input placeholder="Comentarios Pre Uniones" />
+        <input placeholder="Lectura y Decisión" /><input placeholder="Movimiento Realizar" />
+        <input placeholder="Anuncio" /><input placeholder="Clase con Anuncio" />
+        <button onclick="guardarFila()">Guardar</button>
+      </div>
+      <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+    </div>
+  </main>
+
+  <footer>
+    Derechos Reservados Direct English SAC
+  </footer>
+
+  <script>
+    const admins = ["soporte.online", "dilsen.pastor"];
+    const users = {
+      "soporte.online": "soporte.online",
+      "dilsen.pastor": "dilsen.pastor",
+      "usuario": "usuario"
+    };
+    let currentUser = null;
+
+    function login() {
+      const u = document.getElementById("username").value.trim();
+      const p = document.getElementById("password").value.trim();
+      if (users[u] && users[u] === p) {
+        currentUser = u;
+        localStorage.setItem("sessionUser", u);
+        document.getElementById("loginPage").classList.add("hidden");
+        document.getElementById("mainPage").classList.remove("hidden");
+        cargarDatos();
+      } else {
+        alert("Credenciales inválidas");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("sessionUser");
+      location.reload();
+    }
+
+    function cargarDatos() {
+      const datos = JSON.parse(localStorage.getItem("tablaUniones")) || [];
+      const tbody = document.getElementById("dataBody");
+      tbody.innerHTML = "";
+
+      datos.forEach((fila, i) => {
+        const tr = document.createElement("tr");
+        fila.forEach(col => {
+          const td = document.createElement("td");
+          td.textContent = col;
+          tr.appendChild(td);
+        });
+
+        const tdActions = document.createElement("td");
+        if (admins.includes(currentUser)) {
+          const btn = document.createElement("button");
+          btn.textContent = "Eliminar";
+          btn.onclick = () => eliminarFila(i);
+          tdActions.appendChild(btn);
+        }
+        tr.appendChild(tdActions);
+        tbody.appendChild(tr);
+      });
+
+      if (admins.includes(currentUser)) {
+        document.getElementById("editRow").classList.remove("hidden");
+      }
+    }
+
+    function guardarFila() {
+      const inputs = document.querySelectorAll("#editRow input");
+      const fila = Array.from(inputs).map(input => input.value.trim());
+      if (fila.some(val => !val)) return alert("Completa todos los campos");
+
+      let datos = JSON.parse(localStorage.getItem("tablaUniones")) || [];
+      datos.push(fila);
+      localStorage.setItem("tablaUniones", JSON.stringify(datos));
+      inputs.forEach(input => input.value = "");
+      cargarDatos();
+    }
+
+    function eliminarFila(index) {
+      let datos = JSON.parse(localStorage.getItem("tablaUniones")) || [];
+      datos.splice(index, 1);
+      localStorage.setItem("tablaUniones", JSON.stringify(datos));
+      cargarDatos();
+    }
+
+    window.onload = () => {
+      const savedUser = localStorage.getItem("sessionUser");
+      if (savedUser && users[savedUser]) {
+        currentUser = savedUser;
+        document.getElementById("loginPage").classList.add("hidden");
+        document.getElementById("mainPage").classList.remove("hidden");
+        cargarDatos();
+      }
+    };
+  </script>
 </body>
 </html>
